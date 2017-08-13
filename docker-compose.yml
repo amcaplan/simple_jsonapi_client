@@ -13,14 +13,14 @@ services:
       - db
   spec:
     build: .
-    command: bundle exec rspec
+    command: bin/wait_for_it jsonapi_app:3000 -t 30 -- bundle exec rspec
     volumes:
       - .:/simple_jsonapi_client
     depends_on:
       - jsonapi_app
   console:
     build: .
-    command: bin/development_start
+    command: bin/wait_for_it jsonapi_app:3000 -t 30 -- bin/development_start
     volumes:
       - .:/simple_jsonapi_client
     depends_on:
