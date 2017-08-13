@@ -22,6 +22,14 @@ RSpec.describe 'creating models' do
         expect(reloaded_author.name).to eq(name)
       end
     end
+
+    context 'Given invalid parameters' do
+      let(:name) { 'TOOLONGNAME' * 500 }
+
+      it 'fails to create the Author' do
+        expect { client.create_author(name: name) }.to raise_error { SimpleJSONAPIClient::Base::UnprocessableEntityError }
+      end
+    end
   end
 
   describe 'creating a Post' do
