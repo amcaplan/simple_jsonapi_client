@@ -38,4 +38,12 @@ class JSONAPIAppClient
       connection: connection
     )
   end
+
+  def create_post(author:, title:, text:)
+    Post.create(
+      attributes: { title: title, text: text },
+      relationships: { author: author },
+      connection: connection
+    )
+  end
 end

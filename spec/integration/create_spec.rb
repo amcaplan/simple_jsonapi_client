@@ -23,4 +23,17 @@ RSpec.describe 'creating models' do
       end
     end
   end
+
+  describe 'creating a Post' do
+    context 'Given an Author already exists' do
+      let!(:author) { client.create_author(name: 'Filbert') }
+      let(:title) { 'A Very Proper Post Title' }
+      let(:text) { 'I am absolutely incensed about something.' }
+
+      it 'creates a Post associated with that Author' do
+        post = client.create_post(author: author, title: title, text: text)
+        expect(author.posts.first.id).to eq(post.id)
+      end
+    end
+  end
 end
