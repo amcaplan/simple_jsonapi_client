@@ -5,3 +5,8 @@ services:
     command: bundle exec rspec
     volumes:
       - .:/simple_jsonapi_client
+  console:
+    build: .
+    command: bin/development_start
+    volumes:
+      - .:/simple_jsonapi_client
