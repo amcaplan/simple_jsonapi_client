@@ -1,6 +1,8 @@
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 
-RSpec::Core::RakeTask.new(:spec)
+task :spec do
+  exec('docker-compose run spec')
+end
 
 task :default => :spec

@@ -1,0 +1,7 @@
+version: '3'
+services:
+  spec:
+    build: .
+    command: bundle exec rspec
+    volumes:
+      - .:/simple_jsonapi_client
