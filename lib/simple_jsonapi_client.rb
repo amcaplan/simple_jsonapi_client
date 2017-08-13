@@ -1,5 +1,5 @@
-require "simple_jsonapi_client/version"
+require 'simple_jsonapi_client/version'
 
 module SimpleJSONAPIClient
-  # Your code goes here...
+  require 'simple_jsonapi_client/base'
 end
