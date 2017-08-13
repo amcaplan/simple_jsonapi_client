@@ -14,3 +14,5 @@ RSpec.configure do |config|
 end
 
 require 'pry'
+
+require 'jsonapi_app_client'
