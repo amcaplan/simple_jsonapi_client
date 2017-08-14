@@ -20,30 +20,4 @@ class JSONAPIAppClient
       connection.adapter :net_http
     end
   end
-
-  def fetch_authors
-    Author.fetch_all(connection: connection)
-  end
-
-  def fetch_author(id)
-    Author.fetch(
-      connection: connection,
-      url_opts: { id: id }
-    )
-  end
-
-  def create_author(name:)
-    Author.create(
-      attributes: {name: name},
-      connection: connection
-    )
-  end
-
-  def create_post(author:, title:, text:)
-    Post.create(
-      attributes: { title: title, text: text },
-      relationships: { author: author },
-      connection: connection
-    )
-  end
 end
