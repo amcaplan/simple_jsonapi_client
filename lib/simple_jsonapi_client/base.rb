@@ -59,6 +59,7 @@ module SimpleJSONAPIClient
       end
 
       def model_from(record, included, connection, context = nil)
+        return unless record
         new(
           meta: record['meta'],
           id: record['id'],
@@ -164,7 +165,7 @@ module SimpleJSONAPIClient
           value.to_relationship
         elsif value.respond_to?(:map)
           value.map(&:to_relationship)
-        else
+        elsif value
           raise ArgumentError, "#{value} cannot be converted to relationship!"
         end
       end

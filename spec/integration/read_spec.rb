@@ -18,6 +18,13 @@ RSpec.describe 'reading models' do
     )
   end
 
+  def fetch_post(id)
+    JSONAPIAppClient::Post.fetch(
+      connection: connection,
+      url_opts: { id: id }
+    )
+  end
+
   def create_post(author:, title:, text:)
     JSONAPIAppClient::Post.create(
       attributes: { title: title, text: text },
@@ -63,6 +70,14 @@ RSpec.describe 'reading models' do
           end
         end
       end
+    end
+  end
+
+  context 'fetching a relationship that does not exist' do
+    let(:post) { create_post(author: nil, title: 'Title', text: 'Content!') }
+
+    it 'returns nil' do
+      expect(fetch_post(post.id).author).to be_nil
     end
   end
 end

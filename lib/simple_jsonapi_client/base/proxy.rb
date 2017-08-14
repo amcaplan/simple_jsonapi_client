@@ -5,6 +5,8 @@ module SimpleJSONAPIClient
     class Proxy
       extend Forwardable
 
+      def_delegator :internal_object, :nil?
+
       def inspect
         if @internal_object
           @internal_object.inspect

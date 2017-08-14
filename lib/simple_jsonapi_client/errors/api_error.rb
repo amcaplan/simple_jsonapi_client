@@ -12,7 +12,11 @@ module SimpleJSONAPIClient
 
       def self.new(response)
         error = KNOWN_ERRORS[response.status]
-        error ? const_get(error).new(response) : super
+        if error && self.class == SimpleJSONAPIClient::Base::ApiError
+          SimpleJSONAPIClient::Base.const_get(error).new(response)
+        else
+          super
+        end
       end
 
       attr_reader :response
