@@ -4,10 +4,11 @@ RSpec.describe 'reading models' do
   let(:client) { JSONAPIAppClient.new }
   let(:connection) { client.connection }
 
-  def fetch_author(id)
+  def fetch_author(id, includes: [])
     JSONAPIAppClient::Author.fetch(
       connection: connection,
-      url_opts: { id: id }
+      url_opts: { id: id },
+      includes: includes
     )
   end
 
@@ -29,6 +30,14 @@ RSpec.describe 'reading models' do
     JSONAPIAppClient::Post.create(
       attributes: { title: title, text: text },
       relationships: { author: author },
+      connection: connection
+    )
+  end
+
+  def create_comment(author:, post:, text:)
+    JSONAPIAppClient::Comment.create(
+      attributes: { text: text },
+      relationships: { author: author, post: post },
       connection: connection
     )
   end
@@ -67,6 +76,17 @@ RSpec.describe 'reading models' do
             posts = fetch_author(id).posts
             expect(posts.length).to eq(1)
             expect(posts.first).to be_same_record_as(post)
+          end
+
+          context 'Leveraging includes' do
+            let!(:comment) { create_comment(author: author, post: post, text: 'What a silly article!') }
+            let(:returned_author) { fetch_author(id, includes: ['posts.comments']) }
+
+            it 'uses includes to avoid creating new objects' do
+              returned_author
+              expect(connection).not_to receive(:get)
+              expect(returned_author.posts.first.comments.first.text).to eq(comment.text)
+            end
           end
         end
       end

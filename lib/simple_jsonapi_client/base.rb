@@ -71,9 +71,21 @@ module SimpleJSONAPIClient
         )
       end
 
-      def interpreted_included(included)
-        included.to_a.each_with_object({}) do |record, memo|
-          memo[{ 'id' => record['id'], 'type' => record['type'] }] = record
+      def interpreted_included(records, included)
+        {}.tap do |included_hash|
+          case records
+          when Array
+            include_records(included_hash, records)
+          when Hash
+            include_records(included_hash, [records])
+          end
+          include_records(included_hash, included)
+        end
+      end
+
+      def include_records(included_hash, records)
+        records.to_a.each do |record|
+          included_hash[{ 'id' => record['id'], 'type' => record['type'] }] = record
         end
       end
 
@@ -139,16 +151,17 @@ module SimpleJSONAPIClient
       def interpret_singular_response(response, connection)
         body = response.body
         record = body['data']
-        included = interpreted_included(body['included'])
+        included = interpreted_included(record, body['included'])
         model_from(record, included, connection, response)
       end
 
       def interpret_plural_response(response, connection)
         body = response.body
-        included = interpreted_included(body['included'])
+        records = body['data']
+        included = interpreted_included(records, body['included'])
         {
           'links' => body['links'],
-          'data' => body['data'].map { |record|
+          'data' => records.map { |record|
             model_from(record, included, connection, response)
           }
         }
