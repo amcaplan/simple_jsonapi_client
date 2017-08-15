@@ -73,12 +73,7 @@ module SimpleJSONAPIClient
 
       def interpreted_included(records, included)
         {}.tap do |included_hash|
-          case records
-          when Array
-            include_records(included_hash, records)
-          when Hash
-            include_records(included_hash, [records])
-          end
+          include_records(included_hash, records)
           include_records(included_hash, included)
         end
       end
@@ -151,7 +146,8 @@ module SimpleJSONAPIClient
       def interpret_singular_response(response, connection)
         body = response.body
         record = body['data']
-        included = interpreted_included(record, body['included'])
+        records = [record].compact
+        included = interpreted_included(records, body['included'])
         model_from(record, included, connection, response)
       end
 
