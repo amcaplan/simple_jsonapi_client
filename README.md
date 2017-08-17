@@ -1,8 +1,142 @@
-# SimpleJsonapiClient
+# What is `SimpleJSONAPIClient`?
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/simple_jsonapi_client`. To experiment with that code, run `bin/console` for an interactive prompt.
+`SimpleJSONAPIClient` is a framework for building Ruby clients for JSONAPI-compliant services.  
 
-TODO: Delete this and the text above, and describe your gem
+# How do I use `SimpleJSONAPIClient`?
+
+## Setup
+
+First create models inheriting from `SimpleJSONAPIClient::Base`, and specifying a few details.
+
+* `COLLECTION_URL` - the path to fetch the resource collection
+* `INDIVIDUAL_URL` - the path to fetch an individual resource
+* `TYPE` - the JSONAPI resource type to use when creating a new resource
+* `attributes` - the names of attributes which can be found on the resource
+* relationships - `has_one` and `has_many` define relationships, and take these arguments:
+  * relationship name (e.g., the `:goats` in `has_many :goats`)
+  * `class_name` to use when instantiating related objects
+
+They should look like this:
+
+```ruby
+class Post < SimpleJSONAPIClient::Base
+  COLLECTION_URL = '/posts'
+  INDIVIDUAL_URL = '/posts/%{id}'
+  TYPE = 'posts'
+
+  attributes :title, :text
+
+  has_one :author, class_name: 'Author'
+  has_many :comments, class_name: 'Comment'
+end
+
+class Author < SimpleJSONAPIClient::Base
+  COLLECTION_URL = '/authors'
+  INDIVIDUAL_URL = '/authors/%{id}'
+  TYPE = 'authors'
+
+  attributes :name
+
+  has_many :posts, class_name: 'Post'
+  has_many :comments, class_name: 'Comment'
+end
+
+class Comment < SimpleJSONAPIClient::Base
+  COLLECTION_URL = '/comments'
+  INDIVIDUAL_URL = '/comments/%{id}'
+  TYPE = 'comments'
+
+  attributes :text
+
+  has_one :post, class_name: 'Post'
+  has_one :author, class_name: 'Author'
+end
+```
+
+If you have behavior you'd like to share across models, you may want to first create an abstract class inheriting from `SimpleJSONAPIClient::Base` and then have all your models inherit from that.
+
+Next, create a [`Faraday`](https://github.com/lostisland/faraday) connection to handle the domain, authorization strategy, and anything else you need (making sure to include [JSON parsing middleware](https://github.com/lostisland/faraday_middleware/wiki/Parsing-responses)):
+
+```ruby
+def connection(token)
+  default_headers = {
+    'Accept' => 'application/vnd.api+json',
+    'Content-Type' => 'application/vnd.api+json',
+    'Authorization' => "token=#{token}"
+  }
+
+  @connection ||= Faraday.new(url: 'https://example.com', headers: default_headers) do |connection|
+    connection.request :json
+    connection.response :json, :content_type => /\bjson$/ # use middleware to parse JSON when response Content-Type is json
+    connection.adapter :net_http
+  end
+end
+```
+
+Now you can start making requests!
+
+## Fetching
+
+```ruby
+Post.fetch_all(connection: connection)
+=> #<Enumerator: #<Enumerator::Generator:0x00562894acd420>:each>
+```
+
+What's going on?  `SimpleJSONAPIClient` tries to be as lazy as possible while still being convenient.  So if you actually want to fetch everything, you'll be able to call `Array` methods and it will fetch the resource, paginating through all the results.  If it's an endpoint with thousands of pages, you can use `Enumerator` methods like `#each` and it'll paginate through the results, fetching the next page when it runs out of objects.
+
+Let's call `#to_a` to see a bit more detail.
+
+```ruby
+posts = Post.fetch_all(connection: connection).to_a
+=> [#<JSONAPIAppClient::Post id=1 title="A Very Proper Post Title" text="I am absolutely incensed about something." author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/1/comments>>,
+ #<JSONAPIAppClient::Post id=2 title="The System is Down" text="The Cheat" author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/2/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/2/comments>>]
+```
+
+Attributes are loaded immediately, but relationships are lazily instantiated.  So if we dig a little bit further:
+
+```ruby
+posts.first.author
+=> #<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author>
+```
+
+Nope, still lazy!  However, once we start fetching details about the author, `SimpleJSONAPI` knows a request has to be made, and fills in the details:
+
+```ruby
+posts.first.author.id
+=> "3"
+
+posts.first.author
+=> #<JSONAPIAppClient::Author id=3 name="Filbert" posts=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app:3000/authors/3/posts> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/authors/3/comments>>
+```
+
+We can read more easily by calling `#as_json`:
+
+```ruby
+posts.first.author.as_json
+=> {
+  :data => {
+    :type => "authors",
+    :attributes => { :name => "Filbert" },
+    :relationships => {
+      :posts => {
+        :data => [{ :type => "posts", :id => "1" }]
+      },
+      :comments => { :data => [] }
+    }
+  }
+}
+```
+
+You can also explicitly fetch a single item:
+
+```ruby
+post = JSONAPIAppClient::Post.fetch(connection: connection, url_opts: { id: 1 })
+=> #<JSONAPIAppClient::Post id=1 title="A Very Proper Post Title" text="I am absolutely incensed about something." author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/1/comments>>
+```
+
+`url_opts`, in both `fetch_all` and `fetch` requests, are passed to the template Strings for `INDIVIDUAL_URL` and `COLLECTION_URL` in the model.
+
+More to come...
 
 ## Installation
 
@@ -20,15 +154,11 @@ Or install it yourself as:
 
     $ gem install simple_jsonapi_client
 
-## Usage
-
-TODO: Write usage instructions here
-
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+You must have [Docker](https://docker.com) and [Docker Compose](https://docs.docker.com/compose/) installed to run the tests and use the built-in development utilities.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment, and `bin/rails` to interact with the Rails app in `spec/jsonapi_app` that is provided for local development and testing.
 
 ## Contributing
 
