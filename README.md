@@ -134,7 +134,25 @@ post = JSONAPIAppClient::Post.fetch(connection: connection, url_opts: { id: 1 })
 => #<JSONAPIAppClient::Post id=1 title="A Very Proper Post Title" text="I am absolutely incensed about something." author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/1/comments>>
 ```
 
-`url_opts`, in both `fetch_all` and `fetch` requests, are passed to the template Strings for `INDIVIDUAL_URL` and `COLLECTION_URL` in the model.
+`url_opts`, in all cases where you see them, are passed to the template Strings for `INDIVIDUAL_URL` and `COLLECTION_URL` in the model.
+
+## Updating
+
+If you want to update a record, you can do it from the model itself:
+
+```ruby
+post = JSONAPIAppClient::Post.fetch(url_opts: { id: 1 }, connection: connection)
+=> #<JSONAPIAppClient::Post id=1 title="A Very Proper Post Title" text="I am absolutely incensed about something." author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/1/comments>>
+[2] pry(main)> post.update(attributes: { text: 'foo' })
+=> #<JSONAPIAppClient::Post id=1 title="A Very Proper Post Title" text="foo" author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/1/comments>>
+```
+
+If you have the ID of the record handy, you update straight from the model class without fetching the record first:
+
+```ruby
+JSONAPIAppClient::Post.update(id: 1, url_opts: { id: 1 }, connection: connection, attributes: { text: 'foo' })
+=> #<JSONAPIAppClient::Post id=1 title="A Very Proper Post Title" text="foo" author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=JSONAPIAppClient::Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app:3000/posts/1/comments>>
+```
 
 More to come...
 
