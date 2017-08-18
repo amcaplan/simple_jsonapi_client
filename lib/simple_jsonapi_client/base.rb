@@ -84,12 +84,14 @@ module SimpleJSONAPIClient
         end
       end
 
-      def template(attributes:, relationships: {})
-        { data: {
+      def template(id: nil, attributes:, relationships: {})
+        data = {
           type: self::TYPE,
           attributes: attributes,
           relationships: interpreted_relationships(relationships)
-        }}
+        }
+        data[:id] = id if id
+        { data: data }
       end
 
       private
@@ -115,9 +117,9 @@ module SimpleJSONAPIClient
         connection.post(url, body)
       end
 
-      def update_request(connection:, url_opts: {}, attributes: {})
+      def update_request(connection:, id:, url_opts: {}, attributes: {})
         connection.patch(self::INDIVIDUAL_URL % url_opts) do |request|
-          request.body = template(attributes: attributes)
+          request.body = template(id: id, attributes: attributes)
         end
       end
 
@@ -230,13 +232,18 @@ module SimpleJSONAPIClient
     def update(attributes: {})
        self.class.update(
          connection: connection,
+         id: id,
          url_opts: { id: id },
          attributes: self.attributes.merge!(attributes)
        )
     end
 
     def as_json
-      self.class.template(attributes: attributes, relationships: relationships)
+      self.class.template(
+        id: id,
+        attributes: attributes,
+        relationships: relationships
+      )
     end
 
     def to_json(*args)
