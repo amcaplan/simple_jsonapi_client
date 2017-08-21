@@ -6,6 +6,7 @@ module SimpleJSONAPIClient
       extend Forwardable
 
       KNOWN_ERRORS = {
+        400 => 'BadRequestError',
         404 => 'NotFoundError',
         422 => 'UnprocessableEntityError'
       }.freeze
@@ -79,6 +80,7 @@ module SimpleJSONAPIClient
       end
     end
 
+    BadRequestError          = Class.new(ApiError)
     NotFoundError            = Class.new(ApiError)
     UnprocessableEntityError = Class.new(ApiError)
   end

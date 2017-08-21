@@ -63,6 +63,11 @@ module SimpleJSONAPIClient
         operation(:update_request, :singular, opts)
       end
 
+      def delete(opts)
+        operation(:delete_request, :empty, opts)
+        true
+      end
+
       def model_from(record, included, connection, context = nil)
         return unless record
         new(
@@ -140,6 +145,10 @@ module SimpleJSONAPIClient
         end
       end
 
+      def delete_request(connection:, url_opts: {})
+        connection.delete(self::INDIVIDUAL_URL % url_opts)
+      end
+
       def fetch_request(connection:,
                         url_opts: {},
                         filter_opts: {},
@@ -193,6 +202,9 @@ module SimpleJSONAPIClient
             model_from(record, included, connection, response)
           }
         }
+      end
+
+      def interpret_empty_response(response, connection)
       end
 
       def interpreted_relationships(relationships)
@@ -266,6 +278,13 @@ module SimpleJSONAPIClient
          url_opts: { id: id },
          **attrs
        )
+    end
+
+    def delete
+      self.class.delete(
+        connection: connection,
+        url_opts: { id: id }
+      )
     end
 
     def as_json

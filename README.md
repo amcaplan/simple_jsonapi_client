@@ -170,7 +170,28 @@ Post.update(id: 1, url_opts: { id: 1 }, connection: connection, text: 'foo')
 => #<Post id=1 title="A Very Proper Post Title" text="foo" author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Comment url=http://jsonapi_app:3000/posts/1/comments>>
 ```
 
-More to come...
+## Deleting
+
+You can delete a record from the model itself:
+
+```ruby
+post = Post.fetch(url_opts: { id: 1 }, connection: connection)
+=> #<Post id=1 title="A Very Proper Post Title" text="I am absolutely incensed about something." author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Comment url=http://jsonapi_app:3000/posts/1/comments>>
+
+post.delete
+=> true
+Post.fetch(url_opts: { id: 1 }, connection: connection)
+=> nil
+```
+
+or from the class, if you have the ID:
+
+```ruby
+Post.delete(url_opts: { id: 1 }, connection: connection)
+=> true
+Post.fetch(url_opts: { id: 1 }, connection: connection)
+=> nil
+```
 
 ## Installation
 
