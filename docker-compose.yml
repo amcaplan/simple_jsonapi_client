@@ -4,7 +4,7 @@ services:
     image: postgres
   jsonapi_app:
     build: ./spec/jsonapi_app
-    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    command: bin/wait_for_it db:5432 -t 30 -- bundle exec rails s -p 3000 -b '0.0.0.0'
     volumes:
       - ./spec/jsonapi_app:/jsonapi_app
     ports:
