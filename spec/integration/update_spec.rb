@@ -37,7 +37,7 @@ RSpec.describe 'updating models' do
     let(:changed_name) { 'Pistachio' }
 
     it "updates the Author's name from the model" do
-      expect { author.update(attributes: { name: changed_name }) }.
+      expect { author.update(name: changed_name) }.
         to change { fetch_author(author.id).name }.
         from(original_name).to(changed_name)
     end
@@ -46,7 +46,7 @@ RSpec.describe 'updating models' do
       expect { JSONAPIAppClient::Author.update(
         id: author.id,
         url_opts: { id: author.id },
-        attributes: { name: changed_name },
+        name: changed_name,
         connection: connection
       ) }.
         to change { fetch_author(author.id).name }.

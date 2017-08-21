@@ -117,21 +117,13 @@ module SimpleJSONAPIClient
                          url_opts: {},
                          url: self::COLLECTION_URL % url_opts,
                          **attrs)
-        attributes, relationships = {}, {}
-        attrs.each do |attr, value|
-          if _attributes.key?(attr)
-            attributes[attr] = value
-          elsif self.relationships.key?(attr)
-            relationships[attr] = value
-          else
-            raise ArgumentError, %{Invalid attribute "#{attr}"}
-          end
-        end
+        attributes, relationships = extract_attrs(attrs, {}, {})
         body = template(attributes: attributes, relationships: relationships)
         connection.post(url, body)
       end
 
-      def update_request(connection:, id:, url_opts: {}, attributes: {})
+      def update_request(connection:, id:, url_opts: {}, **attrs)
+        attributes, relationships = extract_attrs(attrs, {}, {})
         connection.patch(self::INDIVIDUAL_URL % url_opts) do |request|
           request.body = template(id: id, attributes: attributes)
         end
@@ -157,6 +149,19 @@ module SimpleJSONAPIClient
         params[:include] = includes.join(',') unless includes.empty?
         params[:filter] = filter_opts unless filter_opts.empty?
         connection.get(url, params)
+      end
+
+      def extract_attrs(attrs, attributes, relationships)
+        attrs.each do |attr, value|
+          if _attributes.key?(attr)
+            attributes[attr] = value
+          elsif self.relationships.key?(attr)
+            relationships[attr] = value
+          else
+            raise ArgumentError, %{Invalid attribute "#{attr}"}
+          end
+        end
+        [attributes, relationships]
       end
 
       def interpret_singular_response(response, connection)
@@ -243,12 +248,12 @@ module SimpleJSONAPIClient
         end
     end
 
-    def update(attributes: {})
+    def update(**attrs)
        self.class.update(
          connection: connection,
          id: id,
          url_opts: { id: id },
-         attributes: self.attributes.merge!(attributes)
+         **attrs
        )
     end
 
