@@ -1,6 +1,6 @@
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/hash/transform_values'
-require 'simple_jsonapi_client/errors'
+require 'simple_jsonapi_client/error'
 require 'simple_jsonapi_client/relationships/relationship'
 require 'simple_jsonapi_client/redirection/fetch_all'
 
@@ -226,7 +226,7 @@ module SimpleJSONAPIClient
         if response.success?
           yield
         else
-          raise self::ApiError.new(response)
+          raise ::SimpleJSONAPIClient::Errors::APIError.generate(response)
         end
       end
     end

@@ -25,7 +25,7 @@ RSpec.describe 'deleting models' do
       context 'deleting on the model level' do
         it 'deletes the Author' do
           expect(author.delete).to eq(true)
-          expect { fetch_author(author.id) }.to raise_error(SimpleJSONAPIClient::Base::NotFoundError)
+          expect { fetch_author(author.id) }.to raise_error(SimpleJSONAPIClient::Errors::NotFoundError)
         end
       end
 
@@ -35,7 +35,7 @@ RSpec.describe 'deleting models' do
             url_opts: { id: author.id },
             connection: connection
           )).to eq(true)
-          expect { fetch_author(author.id) }.to raise_error(SimpleJSONAPIClient::Base::NotFoundError)
+          expect { fetch_author(author.id) }.to raise_error(SimpleJSONAPIClient::Errors::NotFoundError)
         end
       end
     end
@@ -47,7 +47,7 @@ RSpec.describe 'deleting models' do
 
       context 'deleting on the model level' do
         it 'deletes the Author' do
-          expect { author.delete }.to raise_error(SimpleJSONAPIClient::Base::BadRequestError)
+          expect { author.delete }.to raise_error(SimpleJSONAPIClient::Errors::BadRequestError)
         end
       end
 
@@ -58,7 +58,7 @@ RSpec.describe 'deleting models' do
               url_opts: { id: author.id },
               connection: connection
             )
-          }.to raise_error(SimpleJSONAPIClient::Base::BadRequestError)
+          }.to raise_error(SimpleJSONAPIClient::Errors::BadRequestError)
         end
       end
     end

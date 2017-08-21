@@ -1,23 +1,20 @@
 require 'delegate'
 
 module SimpleJSONAPIClient
-  class Base
-    class ApiError < Error
+  module Errors
+    class APIError < ::SimpleJSONAPIClient::Error
       extend Forwardable
 
       KNOWN_ERRORS = {
         400 => 'BadRequestError',
         404 => 'NotFoundError',
         422 => 'UnprocessableEntityError'
-      }.freeze
+      }
+      KNOWN_ERRORS.default = 'APIError'
 
-      def self.new(response)
+      def self.generate(response)
         error = KNOWN_ERRORS[response.status]
-        if error && self == SimpleJSONAPIClient::Base::ApiError
-          SimpleJSONAPIClient::Base.const_get(error).new(response)
-        else
-          super
-        end
+        SimpleJSONAPIClient::Errors.const_get(error).new(response)
       end
 
       attr_reader :response
@@ -80,8 +77,8 @@ module SimpleJSONAPIClient
       end
     end
 
-    BadRequestError          = Class.new(ApiError)
-    NotFoundError            = Class.new(ApiError)
-    UnprocessableEntityError = Class.new(ApiError)
+    BadRequestError          = Class.new(APIError)
+    NotFoundError            = Class.new(APIError)
+    UnprocessableEntityError = Class.new(APIError)
   end
 end

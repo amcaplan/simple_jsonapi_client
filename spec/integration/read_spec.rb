@@ -49,7 +49,7 @@ RSpec.describe 'reading models' do
       let(:id) { 'foobar' }
 
       it 'raises a NotFoundError' do
-        expect { fetch_author(id) }.to raise_error { SimpleJSONAPIClient::Base::NotFoundError }
+        expect { fetch_author(id) }.to raise_error { SimpleJSONAPIClient::Errors::NotFoundError }
       end
     end
 

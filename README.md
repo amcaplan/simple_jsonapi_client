@@ -150,7 +150,7 @@ Comment.create(connection: connection, text: 'I adore your article!', post: post
 => #<Comment id=19 text="I adore your article!" post=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Client::Post url=http://jsonapi_app:3000/comments/19/post> author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/comments/19/author>>
 ```
 
-The created record is returned; if creation fails, a `SimpleJSONAPIClient::Base::ApiError` is raised.
+The created record is returned; if creation fails, a `SimpleJSONAPIClient::Errors::ApiError` is raised.
 
 ## Updating
 

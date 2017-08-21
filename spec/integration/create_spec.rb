@@ -58,7 +58,7 @@ RSpec.describe 'creating models' do
       let(:name) { 'TOOLONGNAME' * 500 }
 
       it 'fails to create the Author' do
-        expect { create_author }.to raise_error { SimpleJSONAPIClient::Base::UnprocessableEntityError }
+        expect { create_author }.to raise_error { SimpleJSONAPIClient::Errors::UnprocessableEntityError }
       end
     end
   end
