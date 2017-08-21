@@ -14,7 +14,7 @@ RSpec.describe 'reading models' do
 
   def create_author
     JSONAPIAppClient::Author.create(
-      attributes: { name: name },
+      name: name,
       connection: connection
     )
   end
@@ -28,16 +28,18 @@ RSpec.describe 'reading models' do
 
   def create_post(author:, title:, text:)
     JSONAPIAppClient::Post.create(
-      attributes: { title: title, text: text },
-      relationships: { author: author },
+      title: title,
+      text: text,
+      author: author,
       connection: connection
     )
   end
 
   def create_comment(author:, post:, text:)
     JSONAPIAppClient::Comment.create(
-      attributes: { text: text },
-      relationships: { author: author, post: post },
+      text: text,
+      author: author,
+      post: post,
       connection: connection
     )
   end

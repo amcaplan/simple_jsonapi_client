@@ -17,15 +17,16 @@ RSpec.describe 'updating models' do
 
   def create_author(name)
     JSONAPIAppClient::Author.create(
-      attributes: { name: name },
+      name: name,
       connection: connection
     )
   end
 
   def create_post(author:, title:, text:)
     JSONAPIAppClient::Post.create(
-      attributes: { title: title, text: text },
-      relationships: { author: author },
+      title: title,
+      text: text,
+      author: author,
       connection: connection
     )
   end

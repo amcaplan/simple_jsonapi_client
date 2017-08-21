@@ -12,10 +12,15 @@ module SimpleJSONAPIClient
         @relationships ||= {}
       end
 
+      def _attributes
+        @_attributes ||= {}
+      end
+
       def attributes(*attrs)
         attrs.each do |attr|
           define_method(attr) { attributes[attr] }
           define_method("#{attr}=") { |x| attributes[attr] = x }
+          _attributes[attr] = true
         end
       end
 
@@ -111,8 +116,17 @@ module SimpleJSONAPIClient
       def create_request(connection:,
                          url_opts: {},
                          url: self::COLLECTION_URL % url_opts,
-                         attributes: {},
-                         relationships: {})
+                         **attrs)
+        attributes, relationships = {}, {}
+        attrs.each do |attr, value|
+          if _attributes.key?(attr)
+            attributes[attr] = value
+          elsif self.relationships.key?(attr)
+            relationships[attr] = value
+          else
+            raise ArgumentError, %{Invalid attribute "#{attr}"}
+          end
+        end
         body = template(attributes: attributes, relationships: relationships)
         connection.post(url, body)
       end

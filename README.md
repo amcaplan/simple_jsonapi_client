@@ -146,7 +146,7 @@ post = Post.fetch(url_opts: { id: 1 }, connection: connection)
 author = Author.fetch(url_opts: { id: 1}, connection: connection)
 => #<Author id=1 name="Filbert" posts=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Post url=http://jsonapi_app:3000/authors/1/posts> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Comment url=http://jsonapi_app:3000/authors/1/comments>>
 
-Comment.create(connection: connection, attributes: { text: 'I adore your article!' }, relationships: { post: post, author: author })
+Comment.create(connection: connection, text: 'I adore your article!', post: post, author: author)
 => #<Comment id=19 text="I adore your article!" post=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Client::Post url=http://jsonapi_app:3000/comments/19/post> author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/comments/19/author>>
 ```
 
