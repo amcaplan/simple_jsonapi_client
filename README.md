@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/amcaplan/simple_jsonapi_client.svg?branch=master)](https://travis-ci.org/amcaplan/simple_jsonapi_client)
+
 # What is `SimpleJSONAPIClient`?
 
 `SimpleJSONAPIClient` is a framework for building Ruby clients for JSONAPI-compliant services.  
