@@ -41,6 +41,7 @@ GEM
     arel (7.1.4)
     builder (3.2.3)
     concurrent-ruby (1.0.5)
+    database_cleaner (1.6.1)
     erubis (2.7.0)
     ffi (1.9.18)
     globalid (0.4.0)
@@ -117,6 +118,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  database_cleaner
   jsonapi-resources
   listen (~> 3.0.5)
   pg

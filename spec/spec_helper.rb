@@ -1,5 +1,7 @@
-require "bundler/setup"
-require "simple_jsonapi_client"
+require 'bundler/setup'
+require 'simple_jsonapi_client'
+require 'pry'
+require 'jsonapi_app_client'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -11,8 +13,9 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.after(:suite) do
+    connection = JSONAPIAppClient.new.connection
+    response = connection.post('/database_cleanings')
+  end
 end
-
-require 'pry'
-
-require 'jsonapi_app_client'
