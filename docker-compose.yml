@@ -2,26 +2,49 @@ version: '3'
 services:
   db:
     image: postgres
-  jsonapi_app:
-    build: ./spec/jsonapi_app
-    command: bin/wait_for_it db:5432 -t 30 -- bundle exec rails s -p 3000 -b '0.0.0.0'
-    volumes:
-      - ./spec/jsonapi_app:/jsonapi_app
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
   spec:
     build: .
-    command: bin/wait_for_it jsonapi_app:3000 -t 30 -- bundle exec rspec
+    entrypoint: bin/wait_for_it jsonapi_app_spec:3001 -t 30 --
+    command: bundle exec rspec
     volumes:
       - .:/simple_jsonapi_client
     depends_on:
-      - jsonapi_app
+      - jsonapi_app_spec
+    environment:
+      API_URL: jsonapi_app_spec
+      API_PORT: 3001
+  jsonapi_app_spec:
+    build: ./spec/jsonapi_app
+    entrypoint: bin/wait_for_it db:5432 -t 30 --
+    volumes:
+      - ./spec/jsonapi_app:/jsonapi_app
+      - /jsonapi_app/tmp/
+    command: bundle exec rails s -p 3001 -b '0.0.0.0'
+    ports:
+      - "3001:3001"
+    environment:
+      API_PORT: 3001
+    depends_on:
+      - db
   console:
     build: .
-    command: bin/wait_for_it jsonapi_app:3000 -t 30 -- bin/development_start
+    entrypoint: bin/wait_for_it jsonapi_app_console:3002 -t 30 --
+    command: bin/development_start
     volumes:
       - .:/simple_jsonapi_client
     depends_on:
-      - jsonapi_app
+      - jsonapi_app_console
+  jsonapi_app_console:
+    build: ./spec/jsonapi_app
+    entrypoint: bin/wait_for_it db:5432 -t 30 --
+    volumes:
+      - ./spec/jsonapi_app:/jsonapi_app
+      - /jsonapi_app/tmp/
+    command: bundle exec rails s -p 3002 -b '0.0.0.0'
+    ports:
+      - "3002:3002"
+    environment:
+      API_URL: jsonapi_app_console
+      API_PORT: 3002
+    depends_on:
+      - db
