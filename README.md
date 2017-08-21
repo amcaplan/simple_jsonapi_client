@@ -136,6 +136,22 @@ post = Post.fetch(connection: connection, url_opts: { id: 1 })
 
 `url_opts`, in all cases where you see them, are passed to the template Strings for `INDIVIDUAL_URL` and `COLLECTION_URL` in the model.
 
+## Creating
+
+Creating records is available from the model class:
+
+```ruby
+post = Post.fetch(url_opts: { id: 1 }, connection: connection)
+=> #<Post id=1 title="A Very Proper Post Title" text="I am absolutely incensed about something." author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/posts/1/author> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Comment url=http://jsonapi_app:3000/posts/1/comments>>
+author = Author.fetch(url_opts: { id: 1}, connection: connection)
+=> #<Author id=1 name="Filbert" posts=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Post url=http://jsonapi_app:3000/authors/1/posts> comments=#<SimpleJSONAPIClient::Base::ArrayLinkRelationship model_class=Comment url=http://jsonapi_app:3000/authors/1/comments>>
+
+Comment.create(connection: connection, attributes: { text: 'I adore your article!' }, relationships: { post: post, author: author })
+=> #<Comment id=19 text="I adore your article!" post=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Client::Post url=http://jsonapi_app:3000/comments/19/post> author=#<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/comments/19/author>>
+```
+
+The created record is returned; if creation fails, a `SimpleJSONAPIClient::Base::ApiError` is raised.
+
 ## Updating
 
 If you want to update a record, you can do it from the model itself:
