@@ -22,6 +22,13 @@ RSpec.describe 'creating models' do
     )
   end
 
+  def fetch_post(id)
+    JSONAPIAppClient::Post.fetch(
+      connection: connection,
+      url_opts: { id: id }
+    )
+  end
+
   def create_post(author:, title:, text:)
     JSONAPIAppClient::Post.create(
       title: title,
@@ -66,6 +73,24 @@ RSpec.describe 'creating models' do
       it 'creates a Post associated with that Author' do
         post = create_post(author: author, title: title, text: text)
         expect(author.posts.first.id).to eq(post.id)
+      end
+
+      context 'using explicit attributes and relationships' do
+        let!(:post) {
+          JSONAPIAppClient::Post.create(
+            attributes: { title: title, text: text },
+            author: author,
+            connection: connection
+          )
+        }
+
+        it 'creates a Post with the specified attributes' do
+          expect(fetch_post(post.id).text).to eq(text)
+        end
+
+        it 'creates a Post with the specified relationships' do
+          expect(author.posts.first.id).to eq(post.id)
+        end
       end
     end
   end

@@ -116,8 +116,10 @@ module SimpleJSONAPIClient
       def create_request(connection:,
                          url_opts: {},
                          url: self::COLLECTION_URL % url_opts,
+                         attributes: {},
+                         relationships: {},
                          **attrs)
-        attributes, relationships = extract_attrs(attrs, {}, {})
+        attributes, relationships = extract_attrs(attrs, attributes, relationships)
         body = template(attributes: attributes, relationships: relationships)
         connection.post(url, body)
       end
