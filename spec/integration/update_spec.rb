@@ -22,6 +22,13 @@ RSpec.describe 'updating models' do
     )
   end
 
+  def fetch_post(id)
+    JSONAPIAppClient::Post.fetch(
+      connection: connection,
+      url_opts: { id: id }
+    )
+  end
+
   def create_post(author:, title:, text:)
     JSONAPIAppClient::Post.create(
       title: title,
@@ -51,6 +58,25 @@ RSpec.describe 'updating models' do
       ) }.
         to change { fetch_author(author.id).name }.
         from(original_name).to(changed_name)
+    end
+
+    describe 'passing attributes and relationships explicitly' do
+      let(:post) { create_post(author: author, title: original_title, text: 'I love everything!') }
+      let(:original_title) { 'Love' }
+      let(:changed_title) { 'Looooove' }
+      let(:author2) { create_author('Hazelnut') }
+
+      it "updates the Post's title" do
+        expect { post.update(attributes: { title: changed_title }) }.
+          to change { fetch_post(post.id).title }.
+          from(original_title).to(changed_title)
+      end
+
+      it "updates the Post's author" do
+        expect { post.update(relationships: { author: author2 }) }.
+          to change { fetch_post(post.id).author.id }.
+          from(author.id).to(author2.id)
+      end
     end
   end
 end

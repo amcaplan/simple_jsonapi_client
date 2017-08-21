@@ -122,10 +122,19 @@ module SimpleJSONAPIClient
         connection.post(url, body)
       end
 
-      def update_request(connection:, id:, url_opts: {}, **attrs)
-        attributes, relationships = extract_attrs(attrs, {}, {})
+      def update_request(connection:,
+                         id:,
+                         url_opts: {},
+                         attributes: {},
+                         relationships: {},
+                         **attrs)
+        attributes, relationships = extract_attrs(attrs, attributes, relationships)
         connection.patch(self::INDIVIDUAL_URL % url_opts) do |request|
-          request.body = template(id: id, attributes: attributes)
+          request.body = template(
+            id: id,
+            attributes: attributes,
+            relationships: relationships
+          )
         end
       end
 
