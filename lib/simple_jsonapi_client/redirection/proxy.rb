@@ -1,7 +1,7 @@
 require 'delegate'
 
 module SimpleJSONAPIClient
-  class Base
+  module Redirection
     class Proxy
       extend Forwardable
 

@@ -1,8 +1,8 @@
-require 'simple_jsonapi_client/base/proxy'
+require 'simple_jsonapi_client/redirection/proxy'
 
 module SimpleJSONAPIClient
-  class Base
-    class FetchAll < ::SimpleJSONAPIClient::Base::Proxy
+  module Redirection
+    class FetchAll < ::SimpleJSONAPIClient::Redirection::Proxy
       def_delegators :internal_object, *(Array.instance_methods(false) - instance_methods)
       def_delegators :internal_enumerator, *(Enumerator.instance_methods(false) - instance_methods)
 

@@ -1,8 +1,8 @@
-require 'simple_jsonapi_client/base/data_relationship_proxy'
+require 'simple_jsonapi_client/relationships/data_relationship_proxy'
 
 module SimpleJSONAPIClient
-  class Base
-    class ArrayDataRelationship < ::SimpleJSONAPIClient::Base::DataRelationshipProxy
+  module Relationships
+    class ArrayDataRelationship < DataRelationshipProxy
       private
 
       def pseudo_inspect

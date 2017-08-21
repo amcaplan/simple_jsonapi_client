@@ -1,9 +1,8 @@
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/hash/transform_values'
 require 'simple_jsonapi_client/errors'
-require 'simple_jsonapi_client/base/array_link_relationship'
-require 'simple_jsonapi_client/base/relationship'
-require 'simple_jsonapi_client/base/fetch_all'
+require 'simple_jsonapi_client/relationships/relationship'
+require 'simple_jsonapi_client/redirection/fetch_all'
 
 module SimpleJSONAPIClient
   class Base
@@ -35,14 +34,14 @@ module SimpleJSONAPIClient
         model_class = opts.fetch(:class) { opts.fetch(:class_name) }
         define_relationship_methods!(relationship_name)
         relationships[relationship_name.to_sym] =
-          HasManyRelationship.new(model_class)
+          Relationships::HasManyRelationship.new(model_class)
       end
 
       def has_one(relationship_name, opts)
         define_relationship_methods!(relationship_name)
         model_class = opts.fetch(:class) { opts.fetch(:class_name) }
         relationships[relationship_name.to_sym] =
-          HasOneRelationship.new(model_class)
+          Relationships::HasOneRelationship.new(model_class)
       end
 
       def fetch(opts)
@@ -50,7 +49,7 @@ module SimpleJSONAPIClient
       end
 
       def fetch_all(opts)
-        FetchAll.new(opts) do |request_opts|
+        Redirection::FetchAll.new(opts) do |request_opts|
           operation(:fetch_all_request, :plural, request_opts)
         end
       end

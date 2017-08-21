@@ -1,8 +1,8 @@
-require 'simple_jsonapi_client/base/link_relationship_proxy'
+require 'simple_jsonapi_client/relationships/link_relationship_proxy'
 
 module SimpleJSONAPIClient
-  class Base
-    class ArrayLinkRelationship < ::SimpleJSONAPIClient::Base::LinkRelationshipProxy
+  module Relationships
+    class ArrayLinkRelationship < LinkRelationshipProxy
       def_delegators :internal_object, *(Array.instance_methods(false) - instance_methods)
 
       private

@@ -1,5 +1,5 @@
 module SimpleJSONAPIClient
-  class Base
+  module Relationships
     class Relationship
       def initialize(model_class, url_opts = {})
         @model_class = model_class
@@ -30,5 +30,5 @@ module SimpleJSONAPIClient
   end
 end
 
-require 'simple_jsonapi_client/base/has_many_relationship'
-require 'simple_jsonapi_client/base/has_one_relationship'
+require 'simple_jsonapi_client/relationships/has_many_relationship'
+require 'simple_jsonapi_client/relationships/has_one_relationship'

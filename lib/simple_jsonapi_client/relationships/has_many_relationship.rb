@@ -1,8 +1,8 @@
-require 'simple_jsonapi_client/base/array_data_relationship'
-require 'simple_jsonapi_client/base/array_link_relationship'
+require 'simple_jsonapi_client/relationships/array_data_relationship'
+require 'simple_jsonapi_client/relationships/array_link_relationship'
 
 module SimpleJSONAPIClient
-  class Base
+  module Relationships
     class HasManyRelationship < Relationship
       def call(info, included, connection)
         if (records = info['data'])

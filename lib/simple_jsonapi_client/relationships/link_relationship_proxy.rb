@@ -1,8 +1,8 @@
-require 'simple_jsonapi_client/base/proxy'
+require 'simple_jsonapi_client/redirection/proxy'
 
 module SimpleJSONAPIClient
-  class Base
-    class LinkRelationshipProxy < ::SimpleJSONAPIClient::Base::Proxy
+  module Relationships
+    class LinkRelationshipProxy < ::SimpleJSONAPIClient::Redirection::Proxy
       def initialize(klass, connection, url)
         @klass = klass
         @connection = connection
