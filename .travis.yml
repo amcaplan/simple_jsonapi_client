@@ -1,5 +1,8 @@
-sudo: false
+sudo: required
 language: ruby
-rvm:
-  - 2.4.0
-before_install: gem install bundler -v 1.15.3
+services:
+  - docker
+before_install:
+  - bin/setup
+script:
+  - rake

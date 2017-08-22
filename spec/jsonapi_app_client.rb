@@ -6,7 +6,9 @@ Dir.glob('./**/jsonapi_app_client/**/*.rb').each do |file|
 end
 
 class JSONAPIAppClient
-  API_URL = 'http://jsonapi_app:3000'
+  url = ENV.fetch("API_URL")
+  port = ENV.fetch("API_PORT") { 3000 }
+  API_URL = "http://#{url}:#{port}"
 
   def connection
     default_headers = {

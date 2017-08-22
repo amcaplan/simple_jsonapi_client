@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker-compose run -p 3000:3000 jsonapi_app rails "$@"
+docker-compose run -p 3000:3000 jsonapi_app_console rails "$@"
