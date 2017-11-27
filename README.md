@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/amcaplan/simple_jsonapi_client.svg?branch=master)](https://travis-ci.org/amcaplan/simple_jsonapi_client)
+[![Gem Version](https://badge.fury.io/rb/simple_jsonapi_client.svg)](https://badge.fury.io/rb/simple_jsonapi_client)
 
 # What is `SimpleJSONAPIClient`?
 
