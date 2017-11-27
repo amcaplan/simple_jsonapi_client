@@ -208,7 +208,9 @@ module SimpleJSONAPIClient
 
       def interpreted_relationships(relationships)
         relationships.transform_values { |value|
-          { data: relationship_from(value) }
+          if (relationship = relationship_from(value))
+            { data: relationship }
+          end
         }
       end
 
@@ -217,7 +219,7 @@ module SimpleJSONAPIClient
           value.to_relationship
         elsif value.respond_to?(:map)
           value.map(&:to_relationship)
-        elsif value
+        elsif !value.nil?
           raise ArgumentError, "#{value} cannot be converted to relationship!"
         end
       end
