@@ -3,4 +3,10 @@ class PostResource < JSONAPI::Resource
 
   has_one :author
   has_many :comments
+
+  def meta(options)
+    {
+      copyright: "Copyright #{_model.updated_at.year}"
+    }
+  end
 end

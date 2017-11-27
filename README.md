@@ -27,6 +27,7 @@ class Post < SimpleJSONAPIClient::Base
   TYPE = 'posts'
 
   attributes :title, :text
+  meta :copyright
 
   has_one :author, class_name: 'Author'
   has_many :comments, class_name: 'Comment'
@@ -137,6 +138,18 @@ post = Post.fetch(connection: connection, url_opts: { id: 1 })
 ```
 
 `url_opts`, in all cases where you see them, are passed to the template Strings for `INDIVIDUAL_URL` and `COLLECTION_URL` in the model.
+
+Of course, `attributes` and `meta` information become methods on the object:
+
+```ruby
+post = Post.fetch(connection: connection, url_opts: { id: 1 })
+post.title
+=> "A Very Proper Post Title"
+post.text
+=> "I am absolutely incensed about something."
+post.copyright
+=> "Copyright 2017"
+```
 
 ## Creating
 

@@ -92,6 +92,14 @@ RSpec.describe 'reading models' do
           end
         end
       end
+
+      context 'fetching a model with metadata' do
+        let(:post) { create_post(author: author, title: 'Title', text: 'Content!') }
+
+        it 'returns the metadata' do
+          expect(fetch_post(post.id).copyright).to eq("Copyright #{Time.now.year}")
+        end
+      end
     end
   end
 
