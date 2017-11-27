@@ -34,6 +34,9 @@ services:
       - .:/simple_jsonapi_client
     depends_on:
       - jsonapi_app_console
+    environment:
+      API_URL: jsonapi_app_console
+      API_PORT: 3002
   jsonapi_app_console:
     build: ./spec/jsonapi_app
     entrypoint: bin/wait_for_it db:5432 -t 30 --
@@ -43,8 +46,5 @@ services:
     command: bundle exec rails s -p 3002 -b '0.0.0.0'
     ports:
       - "3002:3002"
-    environment:
-      API_URL: jsonapi_app_console
-      API_PORT: 3002
     depends_on:
       - db
