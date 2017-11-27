@@ -24,6 +24,18 @@ module SimpleJSONAPIClient
         internal_object.__send__(:respond_to?, *args)
       end
 
+      def as_json
+        if internal_object.respond_to?(:as_json)
+          internal_object.as_json
+        elsif internal_object.is_a?(Array)
+          internal_object.map(&:as_json)
+        elsif nil?
+          nil
+        else
+          raise "Cannot convert #{inspect} to JSON!"
+        end
+      end
+
       private
 
       def internal_object

@@ -77,6 +77,14 @@ RSpec.describe 'updating models' do
           to change { fetch_post(post.id).author.id }.
           from(author.id).to(author2.id)
       end
+
+      context 'a relationship is changed to null' do
+        it "updates the Posts's author to null" do
+          expect { post.update(relationships: { author: nil }) }.
+            to change { fetch_post(post.id).author.as_json }.
+            from(post.author.as_json).to(nil)
+        end
+      end
     end
   end
 end
