@@ -102,7 +102,7 @@ posts.first.author
 => #<SimpleJSONAPIClient::Base::SingularLinkRelationship model_class=Author url=http://jsonapi_app:3000/posts/1/author>
 ```
 
-Nope, still lazy!  However, once we start fetching details about the author, `SimpleJSONAPI` knows a request has to be made, and fills in the details:
+Nope, still lazy!  However, once we start fetching details about the author, `SimpleJSONAPIClient` knows a request has to be made, and fills in the details:
 
 ```ruby
 posts.first.author.id
