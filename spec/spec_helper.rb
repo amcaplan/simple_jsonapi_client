@@ -14,7 +14,7 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.after(:suite) do
+  config.after(:each) do
     connection = JSONAPIAppClient.new.connection
     response = connection.post('/database_cleanings')
   end

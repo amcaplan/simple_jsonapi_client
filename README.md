@@ -80,6 +80,8 @@ Now you can start making requests!
 
 ## Fetching
 
+### Laziness and `SimpleJSONAPIClient`
+
 ```ruby
 Post.fetch_all(connection: connection)
 => #<Enumerator: #<Enumerator::Generator:0x00562894acd420>:each>
@@ -130,6 +132,8 @@ posts.first.author.as_json
 }
 ```
 
+### More About Fetching Capabilities
+
 You can also explicitly fetch a single item:
 
 ```ruby
@@ -139,7 +143,7 @@ post = Post.fetch(connection: connection, url_opts: { id: 1 })
 
 `url_opts`, in all cases where you see them, are passed to the template Strings for `INDIVIDUAL_URL` and `COLLECTION_URL` in the model.
 
-Of course, `attributes` and `meta` information become methods on the object:
+You've already seen that `id` and `relationships` are available; `attributes` and `meta` information also become methods on the object:
 
 ```ruby
 post = Post.fetch(connection: connection, url_opts: { id: 1 })
@@ -149,6 +153,23 @@ post.text
 => "I am absolutely incensed about something."
 post.copyright
 => "Copyright 2017"
+```
+
+You can also use JSONAPI includes to reduce the number of requests that are necessary:
+
+```ruby
+post = JSONAPIAppClient::Post.fetch(connection: connection, url_opts: { id: 1 }, includes: ['author', 'comments.author'])
+post.author # will not make another web request
+post.comments.first.author # will not make another web request
+```
+
+`SimpleJSONAPIClient` will check the included records for related records you access through the returned model.
+
+And finally, you can use JSONAPI-style filtering as well:
+
+```ruby
+JSONAPIAppClient::Author.fetch_all(connection: connection, filter_opts: { name: 'Filbert' }).to_a
+=> [#<JSONAPIAppClient::Author id=1 name="Filbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/1/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/1/comments>>]
 ```
 
 ## Creating

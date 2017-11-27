@@ -12,6 +12,14 @@ RSpec.describe 'reading models' do
     )
   end
 
+  def fetch_authors(filter: [], includes: [])
+    JSONAPIAppClient::Author.fetch_all(
+      connection: connection,
+      filter_opts: filter,
+      includes: includes
+    )
+  end
+
   def create_author
     JSONAPIAppClient::Author.create(
       name: name,
@@ -42,6 +50,50 @@ RSpec.describe 'reading models' do
       post: post,
       connection: connection
     )
+  end
+
+  context 'fetching a plural model' do
+    let!(:authors) {
+      2.times.map { create_author }
+    }
+
+    def name
+      @index ||= 0
+      @index += 1
+      "author#{@index}"
+    end
+
+    it 'returns the models' do
+      expect(fetch_authors.map(&:id)).to eq(authors.map(&:id))
+    end
+
+    context 'filtering' do
+      it 'returns only the models described by the filter' do
+        first_fetched = fetch_authors(filter: { name: authors.first.name })
+        expect(first_fetched.length).to eq(1)
+        expect(first_fetched.first.id).to eq(authors.first.id)
+      end
+    end
+
+    context 'leveraging includes' do
+      let!(:posts) {
+        authors.map { |author|
+          create_post(author: author, title: "A title", text: "Some text")
+        }
+      }
+      let!(:comments) {
+        posts.map.with_index { |post, index|
+          create_comment(author: authors[index], post: post, text: 'What a silly article!')
+        }
+      }
+      let(:returned_authors) { fetch_authors(includes: ['posts.comments']) }
+
+      it 'uses includes to avoid new HTTP requests' do
+        returned_authors.first
+        expect(connection).not_to receive(:get)
+        expect(returned_authors.first.posts.first.comments.first.text).to eq(comments.first.text)
+      end
+    end
   end
 
   context 'fetching an individual model' do
@@ -84,7 +136,7 @@ RSpec.describe 'reading models' do
             let!(:comment) { create_comment(author: author, post: post, text: 'What a silly article!') }
             let(:returned_author) { fetch_author(id, includes: ['posts.comments']) }
 
-            it 'uses includes to avoid creating new objects' do
+            it 'uses includes to avoid new HTTP requests' do
               returned_author
               expect(connection).not_to receive(:get)
               expect(returned_author.posts.first.comments.first.text).to eq(comment.text)
