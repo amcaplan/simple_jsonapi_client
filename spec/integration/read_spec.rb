@@ -12,10 +12,11 @@ RSpec.describe 'reading models' do
     )
   end
 
-  def fetch_authors(filter: [], includes: [])
+  def fetch_authors(filter: {}, page: {}, includes: [])
     JSONAPIAppClient::Author.fetch_all(
       connection: connection,
       filter_opts: filter,
+      page_opts: page,
       includes: includes
     )
   end
@@ -72,6 +73,14 @@ RSpec.describe 'reading models' do
         first_fetched = fetch_authors(filter: { name: authors.first.name })
         expect(first_fetched.length).to eq(1)
         expect(first_fetched.first.id).to eq(authors.first.id)
+      end
+    end
+
+    context 'specifying pagination' do
+      it 'adjusts the pagination strategy' do
+        expect(connection).to receive(:get).and_call_original.twice
+        fetched = fetch_authors(page: { size: 1 })
+        expect(fetched.map(&:id)).to eq(authors.map(&:id))
       end
     end
 

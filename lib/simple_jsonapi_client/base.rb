@@ -163,10 +163,12 @@ module SimpleJSONAPIClient
                             url_opts: {},
                             url: self::COLLECTION_URL % url_opts,
                             filter_opts: {},
+                            page_opts: {},
                             includes: [])
         params = {}
         params[:include] = includes.join(',') unless includes.empty?
         params[:filter] = filter_opts unless filter_opts.empty?
+        params[:page] = page_opts unless page_opts.empty?
         connection.get(url, params)
       end
 
