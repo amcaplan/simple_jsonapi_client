@@ -166,11 +166,28 @@ post.comments.first.author # will not make another web request
 
 `SimpleJSONAPIClient` will check the included records for related records you access through the returned model.
 
-And finally, you can use JSONAPI-style filtering as well:
+And finally, you can use JSONAPI-style filtering and pagination as well:
 
 ```ruby
+# Given 3 authors...
+JSONAPIAppClient::Author.fetch_all(connection: connection).to_a
+=> [#<JSONAPIAppClient::Author id=1 name="Filbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/1/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/1/comments>>,
+ #<JSONAPIAppClient::Author id=2 name="Dilbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/2/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/2/comments>>,
+ #<JSONAPIAppClient::Author id=3 name="Wilbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/3/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/3/comments>>]
+
+# Filtering by name
 JSONAPIAppClient::Author.fetch_all(connection: connection, filter_opts: { name: 'Filbert' }).to_a
 => [#<JSONAPIAppClient::Author id=1 name="Filbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/1/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/1/comments>>]
+
+# Just grabbing the last page
+JSONAPIAppClient::Author.fetch_all(connection: connection, page_opts: { size: 1, number: 3 }).to_a
+=> [#<JSONAPIAppClient::Author id=3 name="Wilbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/3/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/3/comments>>]
+
+# You can adjust the pagination strategy and SimpleJSONAPIClient will follow it, but return the same results
+JSONAPIAppClient::Author.fetch_all(connection: connection, page_opts: { size: 1, number: 1 }).to_a
+=> [#<JSONAPIAppClient::Author id=1 name="Filbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/1/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/1/comments>>,
+ #<JSONAPIAppClient::Author id=2 name="Dilbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/2/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/2/comments>>,
+ #<JSONAPIAppClient::Author id=3 name="Wilbert" posts=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Post url=http://jsonapi_app_console:3002/authors/3/posts> comments=#<SimpleJSONAPIClient::Relationships::ArrayLinkRelationship model_class=JSONAPIAppClient::Comment url=http://jsonapi_app_console:3002/authors/3/comments>>]
 ```
 
 ## Creating
