@@ -31,6 +31,7 @@ module SimpleJSONAPIClient
             end
             break unless (next_link = current_response.dig('links', 'next'))
             current_opts.merge!(url_opts: {}, url: next_link)
+            current_opts.delete(:page_opts)
           end
         end
       end
