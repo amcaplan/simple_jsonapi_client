@@ -98,9 +98,9 @@ RSpec.describe 'reading models' do
       let(:returned_authors) { fetch_authors(includes: ['posts.comments']) }
 
       it 'uses includes to avoid new HTTP requests' do
-        returned_authors.first
+        author = returned_authors.first
         expect(connection).not_to receive(:get)
-        expect(returned_authors.first.posts.first.comments.first.text).to eq(comments.first.text)
+        expect(author.posts.first.comments.first.text).to eq(comments.first.text)
       end
     end
   end
