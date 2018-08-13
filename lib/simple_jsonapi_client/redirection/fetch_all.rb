@@ -5,6 +5,7 @@ module SimpleJSONAPIClient
     class FetchAll < ::SimpleJSONAPIClient::Redirection::Proxy
       def_delegators :internal_object, *(Array.instance_methods(false) - instance_methods)
       def_delegators :internal_enumerator, *(Enumerator.instance_methods(false) - instance_methods)
+      def_delegators :internal_enumerator, *(Enumerable.instance_methods(false) - instance_methods)
 
       def initialize(base_opts, &operation)
         @base_opts = base_opts
