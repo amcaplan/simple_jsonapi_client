@@ -5,5 +5,5 @@ RUN mkdir /jsonapi_app
 WORKDIR /jsonapi_app
 ADD Gemfile /jsonapi_app/Gemfile
 ADD Gemfile.lock /jsonapi_app/Gemfile.lock
-ADD . /jsonapi_app
 RUN bundle install
+ADD . /jsonapi_app
