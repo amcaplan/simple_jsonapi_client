@@ -1,5 +1,4 @@
-require 'active_support/core_ext/hash/keys'
-require 'active_support/core_ext/hash/transform_values'
+require 'simple_jsonapi_client/utils'
 require 'simple_jsonapi_client/error'
 require 'simple_jsonapi_client/relationships/relationship'
 require 'simple_jsonapi_client/redirection/fetch_all'
@@ -208,12 +207,22 @@ module SimpleJSONAPIClient
       def interpret_empty_response(response, connection)
       end
 
-      def interpreted_relationships(relationships)
-        relationships.transform_values { |value|
-          if (relationship = relationship_from(value))
-            { data: relationship }
-          end
-        }
+      if {}.respond_to?(:transform_values)
+        def interpreted_relationships(relationships)
+          relationships.transform_values { |value|
+            if (relationship = relationship_from(value))
+              { data: relationship }
+            end
+          }
+        end
+      else
+        def interpreted_relationships(relationships)
+          Utils.transform_values(relationships) { |value|
+            if (relationship = relationship_from(value))
+              { data: relationship }
+            end
+          }
+        end
       end
 
       def relationship_from(value)
@@ -238,12 +247,12 @@ module SimpleJSONAPIClient
     attr_reader :id, :context
 
     def initialize(meta: nil, id:, attributes: nil, relationships: nil, included: {}, connection:, context: nil)
-      @meta = meta.symbolize_keys if meta
+      @meta = Utils.symbolize_keys(meta) if meta
       @id = id
       @included = included
       @connection = connection
       @context = context
-      @attributes = attributes.symbolize_keys if attributes
+      @attributes = Utils.symbolize_keys(attributes) if attributes
       @input_relationships = relationships
     end
 
@@ -267,7 +276,7 @@ module SimpleJSONAPIClient
       @relationships ||=
         begin
           if input_relationships
-            relationships_to_models(input_relationships.symbolize_keys)
+            relationships_to_models(Utils.symbolize_keys(input_relationships))
           else
             loaded_record.relationships
           end
