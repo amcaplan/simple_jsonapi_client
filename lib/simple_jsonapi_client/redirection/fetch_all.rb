@@ -30,7 +30,7 @@ module SimpleJSONAPIClient
             current_response['data'].each do |record|
               yielder << record
             end
-            break unless (next_link = current_response.dig('links', 'next'))
+            break unless (next_link = Utils.hash_dig(current_response, 'links', 'next'))
             current_opts.merge!(url_opts: {}, url: next_link)
             current_opts.delete(:page_opts)
           end
