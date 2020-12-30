@@ -4,6 +4,6 @@ services:
   - docker
 before_install:
   - bin/setup
-  - gem update bundler
+  - gem install -v 2.2 bundler -N
 script:
   - rake
