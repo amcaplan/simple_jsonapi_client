@@ -17,7 +17,7 @@ services:
       API_PORT: 3001
   jsonapi_app_spec:
     build: ./spec/jsonapi_app
-    entrypoint: bin/wait_for_it db:5432 -t 30 --
+    entrypoint: bin/wait_for_it db:5432 -t 60 --
     # volumes:
       # - ./spec/jsonapi_app:/jsonapi_app
     command: bundle exec rails s -p 3001 -b '0.0.0.0'
@@ -40,7 +40,7 @@ services:
       API_PORT: 3002
   jsonapi_app_console:
     build: ./spec/jsonapi_app
-    entrypoint: bin/wait_for_it db:5432 -t 30 --
+    entrypoint: bin/wait_for_it db:5432 -t 60 --
     # volumes:
       # - ./spec/jsonapi_app:/jsonapi_app
     command: bundle exec rails s -p 3002 -b '0.0.0.0'
