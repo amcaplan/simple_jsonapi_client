@@ -4,6 +4,7 @@ services:
   - docker
 before_install:
   - bin/setup
-  - gem update bundler
+  - gem install -v 2.2 bundler -N
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 script:
   - rake

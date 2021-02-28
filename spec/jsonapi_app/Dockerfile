@@ -1,6 +1,7 @@
-FROM ruby:2.4.0
+FROM ruby:2.6.6
 RUN apt-get update -qq
-RUN gem update bundler
+RUN gem update --system
+RUN gem install -v 2.2.3 bundler -N
 RUN mkdir /jsonapi_app
 WORKDIR /jsonapi_app
 ADD Gemfile /jsonapi_app/Gemfile
