@@ -22,6 +22,14 @@ RSpec.describe 'creating models' do
     )
   end
 
+  def create_author_with(id:, name:)
+    JSONAPIAppClient::Author.create(
+      id: id,
+      name: name,
+      connection: connection
+    )
+  end
+
   def fetch_post(id)
     JSONAPIAppClient::Post.fetch(
       connection: connection,
@@ -51,6 +59,14 @@ RSpec.describe 'creating models' do
         expect(author.name).to eq(name)
         reloaded_author = fetch_author(author.id)
         expect(reloaded_author.name).to eq(name)
+      end
+
+      it 'creates the Author with the provided ID' do
+        # Generate a high, random ID. In production implementation it should be
+        # a UUID or other guaranteed unique id.
+        id = 1000 + Random.rand(99999) 
+        create_author_with(id: id, name: name)
+        expect(fetch_author(id).name).to eq(name)
       end
     end
 
