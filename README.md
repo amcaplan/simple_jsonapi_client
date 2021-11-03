@@ -267,7 +267,8 @@ Or install it yourself as:
 
 You must have [Docker](https://docker.com) and [Docker Compose](https://docs.docker.com/compose/) installed to run the tests and use the built-in development utilities.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment, and `bin/rails` to interact with the Rails app in `spec/jsonapi_app` that is provided for local development and testing.
+After checking out the repo, set-up env vars by copying `.env.example` to `.env` and changing the password.
+Then run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment, and `bin/rails` to interact with the Rails app in `spec/jsonapi_app` that is provided for local development and testing.
 
 ## Contributing
 

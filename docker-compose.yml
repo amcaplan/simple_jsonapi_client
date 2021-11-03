@@ -4,6 +4,8 @@ services:
     image: postgres
     ports:
       - "5432:5432"
+    env_file:
+      - .env
   spec:
     build: .
     entrypoint: bin/wait_for_it jsonapi_app_spec:3001 -t 30 --
@@ -15,6 +17,8 @@ services:
     environment:
       API_URL: jsonapi_app_spec
       API_PORT: 3001
+    env_file:
+      - .env
   jsonapi_app_spec:
     build: ./spec/jsonapi_app
     entrypoint: bin/wait_for_it db:5432 -t 60 --
@@ -25,6 +29,8 @@ services:
       - "3001:3001"
     environment:
       API_PORT: 3001
+    env_file:
+      - .env
     depends_on:
       - db
   console:
@@ -38,6 +44,8 @@ services:
     environment:
       API_URL: jsonapi_app_console
       API_PORT: 3002
+    env_file:
+      - .env
   jsonapi_app_console:
     build: ./spec/jsonapi_app
     entrypoint: bin/wait_for_it db:5432 -t 60 --
@@ -48,3 +56,5 @@ services:
       - "3002:3002"
     depends_on:
       - db
+    env_file:
+      - .env
