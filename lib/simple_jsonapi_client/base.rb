@@ -110,7 +110,7 @@ module SimpleJSONAPIClient
       end
 
       def operation(request_method, response_type, opts)
-        response = send(request_method, opts)
+        response = send(request_method, **opts)
         handling_error(response) do
           send(:"interpret_#{response_type}_response", response, opts[:connection])
         end
