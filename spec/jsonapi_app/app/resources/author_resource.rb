@@ -4,4 +4,8 @@ class AuthorResource < JSONAPI::Resource
 
   has_many :posts
   has_many :comments
+
+  def self.creatable_fields(_context = nil)
+    super + [:id]
+  end
 end
